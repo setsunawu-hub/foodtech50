@@ -1,0 +1,567 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>食品技師 50 天闖關</title>
+<style>
+:root{
+  --bg:#f6f4ee;--card:#fffefa;--ink:#24302a;--mute:#6b766f;--line:#e4e0d3;
+  --brand:#2f7d5b;--brand-ink:#fff;--accent:#e0a526;--danger:#c0504a;--lock:#a9aea9;
+  --soft:#e8f3ec;--shadow:0 1px 3px rgba(40,50,40,.08),0 6px 20px rgba(40,50,40,.05);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#15191a;--card:#1d2322;--ink:#e6ece8;--mute:#93a099;--line:#2c3532;
+    --brand:#4fb589;--brand-ink:#0d1a14;--accent:#e3b341;--danger:#e07a73;--lock:#58625d;
+    --soft:#203229;--shadow:none;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15191a;--card:#1d2322;--ink:#e6ece8;--mute:#93a099;--line:#2c3532;
+  --brand:#4fb589;--brand-ink:#0d1a14;--accent:#e3b341;--danger:#e07a73;--lock:#58625d;
+  --soft:#203229;--shadow:none;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 -apple-system,BlinkMacSystemFont,"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;-webkit-text-size-adjust:100%}
+button{font:inherit;color:inherit;cursor:pointer}
+a{color:var(--brand)}
+.wrap{max-width:860px;margin:0 auto;padding:0 16px 96px}
+header.top{position:sticky;top:0;z-index:20;background:var(--bg);border-bottom:1px solid var(--line)}
+.top-in{max-width:860px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.brand{font-weight:700;font-size:17px;letter-spacing:.02em}
+.spacer{flex:1}
+.pts{display:flex;align-items:center;gap:6px;font-weight:700;background:var(--soft);padding:4px 12px;border-radius:99px}
+.pts small{color:var(--mute);font-weight:400}
+.lvl{max-width:860px;margin:0 auto;padding:0 16px 10px;display:flex;align-items:center;gap:10px;font-size:13px;color:var(--mute)}
+.bar{flex:1;height:8px;background:var(--line);border-radius:99px;overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--brand);border-radius:99px;transition:width .5s}
+nav.tabs{position:fixed;bottom:0;left:0;right:0;z-index:20;background:var(--card);border-top:1px solid var(--line);display:flex;justify-content:center;padding-bottom:env(safe-area-inset-bottom)}
+nav.tabs button{flex:1;max-width:200px;border:0;background:none;padding:10px 4px;font-size:13px;color:var(--mute);display:flex;flex-direction:column;align-items:center;gap:2px}
+nav.tabs button b{font-size:20px;line-height:1}
+nav.tabs button.on{color:var(--brand);font-weight:700}
+h1,h2,h3{line-height:1.3;margin:0}
+h2{font-size:20px;margin:24px 0 10px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:var(--shadow);margin:12px 0}
+.mute{color:var(--mute);font-size:14px}
+.tag{display:inline-block;font-size:12px;padding:1px 10px;border-radius:99px;background:var(--soft);color:var(--brand);font-weight:600}
+.tag.warn{background:#fbefd0;color:#8a6208}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .tag.warn{background:#3a3014;color:#e3b341}}
+.btn{border:1px solid var(--line);background:var(--card);padding:8px 16px;border-radius:10px}
+.btn.pri{background:var(--brand);color:var(--brand-ink);border-color:var(--brand);font-weight:600}
+.btn.sm{padding:3px 10px;font-size:13px}
+.task{display:flex;gap:12px;align-items:flex-start;padding:12px 4px;border-top:1px solid var(--line)}
+.task:first-of-type{border-top:0}
+.task input{width:24px;height:24px;margin-top:2px;accent-color:var(--brand);flex:none}
+.task label{flex:1;cursor:pointer}
+.task .p{flex:none;font-weight:700;color:var(--accent)}
+.task.done label{color:var(--mute);text-decoration:line-through}
+.task.disabled{opacity:.5}
+.kw{display:inline-flex;gap:6px;align-items:center;flex-wrap:wrap}
+.kw code{background:var(--soft);padding:1px 8px;border-radius:6px;font-size:14px}
+.daynav{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+@media(min-width:560px){.grid{grid-template-columns:repeat(10,1fr)}}
+.cell{aspect-ratio:1;border-radius:10px;border:1px solid var(--line);background:var(--card);display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:13px;position:relative}
+.cell b{font-size:15px}
+.cell.done{background:var(--brand);color:var(--brand-ink);border-color:var(--brand)}
+.cell.cur{outline:3px solid var(--accent)}
+.cell.part{background:var(--soft)}
+.cell.lock{color:var(--lock)}
+.cell.star::after{content:"★";position:absolute;top:1px;right:4px;font-size:11px;color:var(--accent)}
+.cell.done.star::after{color:#fff}
+.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:13px;color:var(--mute);margin-top:10px}
+.sw{display:inline-block;width:12px;height:12px;border-radius:3px;border:1px solid var(--line);vertical-align:-1px;margin-right:4px}
+.vault{display:grid;gap:12px}
+.item .head{display:flex;align-items:center;gap:10px;cursor:pointer}
+.item .head h3{font-size:17px;flex:1}
+.item.lock .head h3{color:var(--mute)}
+.item .body{margin-top:12px;border-top:1px solid var(--line);padding-top:12px}
+.item .body h4{margin:14px 0 4px;font-size:15px}
+.item .body ul{margin:4px 0;padding-left:20px}
+.item .body li{margin:3px 0}
+.item .body table{border-collapse:collapse;width:100%;font-size:14px;margin:6px 0}
+.item .body th,.item .body td{border:1px solid var(--line);padding:5px 8px;text-align:left;vertical-align:top}
+.item .body th{background:var(--soft)}
+.formula{background:var(--soft);border-radius:8px;padding:8px 12px;font-family:ui-monospace,Menlo,monospace;font-size:14px;margin:6px 0;overflow-x:auto;white-space:pre-wrap}
+.item .need{font-size:13px;color:var(--mute)}
+dialog{border:0;border-radius:16px;padding:24px;max-width:min(92vw,420px);background:var(--card);color:var(--ink);box-shadow:0 20px 60px rgba(0,0,0,.3)}
+dialog::backdrop{background:rgba(0,0,0,.45)}
+input[type=text],input[type=date]{font:inherit;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);width:100%}
+.login{max-width:420px;margin:12vh auto 0;text-align:center}
+.login h1{font-size:28px}
+.profiles{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:12px 0}
+#toasts{position:fixed;top:70px;left:50%;transform:translateX(-50%);z-index:50;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none;width:92%}
+.toast{background:var(--ink);color:var(--bg);padding:8px 16px;border-radius:99px;font-size:14px;box-shadow:0 6px 20px rgba(0,0,0,.25);animation:pop .3s}
+@keyframes pop{from{transform:translateY(-10px) scale(.9);opacity:0}}
+.cert{text-align:center;border:3px double var(--accent);border-radius:12px;padding:24px 12px}
+.cert h3{font-size:24px;margin-bottom:8px}
+.stat{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+.stat div{background:var(--soft);border-radius:12px;padding:10px 12px}
+.stat b{display:block;font-size:22px}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<div id="toasts"></div>
+<div id="app"></div>
+<dialog id="dlg"></dialog>
+
+<script>
+"use strict";
+/* ============ 計畫資料（來源：食品技師 50 天複習計畫） ============ */
+const SUBJ = {chem:"食品化學",micro:"食品微生物學",proc:"食品加工學",anal:"食品分析與檢驗",law:"食品衛生安全與法規",fact:"食品工廠管理"};
+const P1 = [
+ ["chem","水分與水活性、吸附等溫線、玻璃轉移","水活性、等溫吸濕"],
+ ["chem","醣類：澱粉糊化與老化、改質澱粉、膠體與膳食纖維","澱粉、糊化、膠"],
+ ["chem","脂質：油脂氧化、抗氧化劑、氫化與轉酯化、反式脂肪","油脂、氧化、抗氧化"],
+ ["chem","蛋白質與酵素：變性、功能性質、酵素動力學與褐變","蛋白質、酵素、變性"],
+ ["chem","梅納與焦糖化反應、色素、風味、維生素與礦物質","梅納、色素、維生素"],
+ ["chem","小考日：默寫架構圖，重做本科錯題","錯題複習"],
+ ["micro","微生物生長曲線與環境因子（aw、pH、溫度、柵欄技術）","生長、柵欄、水活性"],
+ ["micro","食品腐敗、各類食品常見腐敗菌、指標微生物","腐敗、指標菌"],
+ ["micro","食媒性病原菌 I：沙門氏菌、大腸桿菌、李斯特菌、曲狀桿菌、腸炎弧菌","沙門氏菌、李斯特菌"],
+ ["micro","食媒性病原菌 II：金黃色葡萄球菌、仙人掌桿菌、肉毒桿菌、產氣莢膜梭菌，病毒與寄生蟲","肉毒、毒素、諾羅"],
+ ["micro","殺菌動力學：D 值、z 值、F 值與熱殺菌計算","D值、殺菌、F值"],
+ ["micro","發酵微生物與檢驗方法（菌落計數、MPN、快速檢測），小考","菌落、MPN、發酵"],
+ ["proc","加工保存原理、熱處理與罐頭殺菌","罐頭、殺菌、商業無菌"],
+ ["proc","冷藏、冷凍、乾燥與濃縮","冷凍、乾燥、濃縮"],
+ ["proc","乳品加工與蛋品加工","乳品、乳製品、蛋"],
+ ["proc","肉品加工與水產加工","肉製品、水產、魚漿"],
+ ["proc","穀類、烘焙、油脂、果蔬與飲料加工","麵粉、烘焙、果汁"],
+ ["proc","發酵食品、新興技術（高壓、擠壓）與包裝，小考","擠壓、高壓、包裝"],
+ ["anal","取樣、誤差與統計、檢量線、LOD／LOQ、方法確效","檢量線、確效、誤差"],
+ ["anal","一般成分分析：水分、灰分、粗蛋白、粗脂肪、纖維、醣類","水分、灰分、凱氏"],
+ ["anal","儀器分析：HPLC、GC、質譜、原子吸收、分光光度、PCR 與 ELISA","HPLC、GC、質譜"],
+ ["anal","感官品評與物性分析，小考","感官、品評、質地"],
+ ["law","食品安全衛生管理法：總則、衛生管理、標示、廣告、輸入、罰則","食品安全衛生管理法"],
+ ["law","食品添加物、標示、營養標示、過敏原、基因改造與健康食品規定","添加物、標示、過敏原"],
+ ["law","GHP、HACCP、ISO 22000、追溯追蹤與業者登錄","HACCP、GHP、追溯"],
+ ["law","污染物、農藥與動物用藥殘留限量，食安事件案例，小考","殘留、限量、食安"],
+ ["fact","工廠設計與佈置、衛生設施、用水與廢水處理","工廠、佈置、廢水"],
+ ["fact","品質管理、統計製程管制與抽樣檢驗","品管、管制圖、抽樣"],
+ ["fact","生產計畫、成本、設備維護與 CIP 清洗","成本、設備、CIP"],
+ ["fact","食品安全管理系統整合；第一階段總驗收：六科錯題彙整","錯題複習"],
+];
+const QUIZ = [6,12,18,22,26,30];
+const P2 = [
+ ["chem","第一輪","114 年食品化學（專技高考卷）","批改，補寫弱題架構"],
+ ["micro","第一輪","114 年食品微生物學（專技高考卷）","批改，重算殺菌值題"],
+ ["proc","第一輪","114 年食品加工學（專技高考卷）","批改，補流程圖與參數"],
+ ["anal","第一輪","114 年食品分析與檢驗（專技高考卷）","批改，補儀器原理與計算"],
+ ["law","第一輪","114 年食品衛生安全與法規（專技高考卷）","批改，核對最新條文"],
+ ["fact","第一輪","114 年食品工廠管理（專技高考卷）","批改，並寫第一輪總檢討"],
+ ["chem","第二輪","115 年食品化學","批改，並做 113 年食品化學申論題 2 題"],
+ ["micro","第二輪","115 年食品微生物學","批改，並做 113 年食品微生物學申論題 2 題"],
+ ["proc","第二輪","115 年食品加工學","批改，並做 113 年食品加工學申論題 2 題"],
+ ["anal","第二輪","115 年食品分析與檢驗","批改，並做 113 年食品分析與檢驗申論題 2 題"],
+ ["law","第二輪","115 年食品衛生安全與法規","批改，並做 113 年同科申論題 2 題"],
+ ["fact","第二輪","115 年食品工廠管理","批改，並比較兩輪分數，排出弱點順位"],
+];
+const P3 = [
+ ["食品化學、食品微生物學弱點","只讀錯題本中這兩科的題目，每題重寫一次答案"],
+ ["食品加工學、食品分析與檢驗弱點","只讀錯題本中這兩科的題目，每題重寫一次答案，加上儀器與流程圖默寫"],
+ ["食品衛生安全與法規、食品工廠管理弱點","核對法規最新修正，重寫條文與數字題"],
+ ["公式與數據卡、六科架構圖","默寫 D 值、z 值、F 值、水活性、凱氏定氮、檢量線、管制圖公式，再對照公式卡"],
+ ["全真模擬日 1","用模擬考或歷屆卷連考 3 科，嚴守時間（科目順序以考選部簡章為準）"],
+ ["全真模擬日 2","連考另外 3 科，晚上整理兩天的失分原因"],
+ ["錯題總清","把錯題複習中仍答錯的題目全部重寫，只做一輪"],
+ ["考前休整","只瀏覽六科架構圖與公式卡，準備證件與文具，早睡"],
+];
+const SEARCH_URL = "https://examscloud.net/search?track=food-technologist";
+const LINKS = {
+  exam114:"https://examscloud.net/prep/food-technologist/114",
+  exam115:"https://examscloud.net/prep/food-technologist/115",
+  exam113:"https://examscloud.net/prep/food-technologist/113",
+  mock:"https://examscloud.net/mock-exam",
+  wrong:"https://examscloud.net/wrong-questions",
+  stats:"https://examscloud.net/stats",
+  all:"https://examscloud.net/prep/food-technologist",
+};
+
+/* ============ 建立 50 天任務與點數 ============ */
+const DAY_BONUS = 20;
+function buildDays(){
+  const days = [];
+  P1.forEach((p,i)=>{
+    const d=i+1, quiz=QUIZ.includes(d), s=SUBJ[p[0]];
+    days.push({d,phase:1,subj:s,title:p[1],kw:p[2],quiz,bonus:DAY_BONUS,
+      tasks:[
+        {id:"a",pts:15,text: d===1?"建立錯題本：準備五種錯因標籤（觀念不清、公式忘記、計算錯誤、法規過時、時間不夠）":"重做錯題（45 分）：前一天、第 3 天、第 7 天的錯題，不看答案"},
+        {id:"b",pts:20,text:"讀當日主題（60 分）：讀架構圖與筆記，標出「題目常問的角度」"},
+        quiz
+          ? {id:"c",pts:30,text:"小考（90 分）：不看書默寫該科架構圖，再把本科錯題全部重做一次"}
+          : {id:"c",pts:30,text:`考古題（90 分）：到「找考題」以關鍵字搜尋，挑 5–8 題申論限時手寫，再看 AI 詳解`,kw:true},
+        {id:"d",pts:15,text:"整理答題架構（45 分）：每題寫成「定義、機制、例子、數據」四段式"},
+      ]});
+  });
+  P2.forEach((p,i)=>{
+    const d=31+i, s=SUBJ[p[0]];
+    days.push({d,phase:2,subj:s,title:`${p[1]}：${p[2]}`,quiz:false,bonus:DAY_BONUS,
+      tasks:[
+        {id:"a",pts:40,text:`上午：不看書、依簡章時間計時手寫整卷 —— ${p[2]}`},
+        {id:"b",pts:30,text:`下午：${p[3]}`},
+        {id:"c",pts:20,text:"晚上：把錯題登入錯題本，標註五種錯因之一"},
+        {id:"d",pts:20,text:"重做前一天、第 3 天、第 7 天的錯題"},
+      ]});
+  });
+  P3.forEach((p,i)=>{
+    const d=43+i;
+    let tasks;
+    if(d<=46) tasks=[{id:"a",pts:50,text:p[1]},{id:"b",pts:30,text:"把今天處理的弱點濃縮成一頁摘要"},{id:"c",pts:20,text:"重做錯題（第 1、3、7 天輪）"}];
+    else if(d<=48) tasks=[{id:"a",pts:60,text:p[1]},{id:"b",pts:25,text:"對照答案批改並計分"},{id:"c",pts:25,text:"整理失分原因，分到五種錯因"}];
+    else if(d===49) tasks=[{id:"a",pts:60,text:p[1]},{id:"b",pts:20,text:"連續兩次答對的題目標記結案"},{id:"c",pts:20,text:"弱點清單歸零檢查"}];
+    else tasks=[{id:"a",pts:30,text:"瀏覽六科架構圖"},{id:"b",pts:30,text:"瀏覽公式卡，不再新增內容"},{id:"c",pts:20,text:"準備證件與文具"},{id:"d",pts:20,text:"早睡，保持體力"}];
+    days.push({d,phase:3,subj:"衝刺",title:`${p[0]}`,quiz:false,bonus:d===50?100:DAY_BONUS,tasks});
+  });
+  return days;
+}
+const DAYS = buildDays();
+const PHASE_NAME = {1:"一、逐科建構",2:"二、歷屆整卷",3:"三、衝刺模擬"};
+const LOGIN_PTS = 10;
+
+/* ============ 等級 ============ */
+const LEVELS = [
+ [0,"食品學徒"],[300,"見習技師"],[900,"助理技師"],[1800,"執業新手"],[3000,"資深技師"],[4500,"首席技師"],[6000,"食品技師"]
+];
+
+/* ============ 寶庫內容（需點數解鎖） ============ */
+const VAULT = [
+ {id:"v0",icon:"📘",title:"四段式答題架構",pts:0,body:`
+  <p>申論題最穩的骨架，每題都寫成四段：</p>
+  <table><tr><th>段落</th><th>寫什麼</th></tr>
+  <tr><td>定義</td><td>一句話講清楚名詞與範圍</td></tr>
+  <tr><td>機制</td><td>原理、反應、流程；能畫圖就畫圖</td></tr>
+  <tr><td>例子</td><td>食品實例、應用、對策</td></tr>
+  <tr><td>數據</td><td>溫度、pH、aw、時間、限量、公式</td></tr></table>
+  <p class="mute">看到題目關鍵字就先想「這題屬於哪個架構」，再下筆。</p>`},
+ {id:"v1",icon:"🔁",title:"錯題 1‑3‑7 循環與五種錯因",pts:100,body:`
+  <h4>循環</h4><ul><li>隔天、第 3 天、第 7 天各重做一次，不看答案。</li><li>連續兩次答對才算結案。</li><li>每題補一句：「下次看到〔關鍵字〕，要想到〔架構〕」。</li></ul>
+  <h4>五種錯因</h4><ul><li>觀念不清 → 回頭補架構</li><li>公式忘記 → 進公式卡</li><li>計算錯誤 → 單位與有效位數檢查</li><li>法規過時 → 核對食藥署最新版</li><li>時間不夠 → 練習先寫有把握的題</li></ul>
+  <p class="mute">每週日看學習紀錄，把錯誤率最高的科目下週多排 1 小時。</p>`},
+ {id:"v2",icon:"🧪",title:"食品化學速記卡",pts:300,body:`
+  <h4>水活性</h4>
+  <div class="formula">aw = P / P0 = 平衡相對濕度 ÷ 100</div>
+  <ul><li>多數細菌下限約 0.91、酵母約 0.88、黴菌約 0.80、嗜鹽菌約 0.75、耐旱黴菌／嗜高滲酵母約 0.60–0.65。</li><li>油脂氧化速率在單分子層水活性附近（約 0.2–0.3）最低；aw 更低或更高都會變快。</li></ul>
+  <h4>澱粉</h4><ul><li>糊化：加熱吸水膨潤，結晶區熔解、雙折射消失，黏度上升。</li><li>老化：直鏈澱粉為主重新排列，冷藏溫度、中等水分時最快；可用乳化劑、單體、改質澱粉延緩。</li></ul>
+  <h4>油脂氧化</h4><ul><li>自由基鏈鎖：起始 → 增殖 → 終止，產物氫過氧化物再裂解成醛酮類酸敗味。</li><li>抗氧化劑：自由基終止型（BHA、BHT、TBHQ、生育醇）；螯合劑（檸檬酸、EDTA）去除金屬催化。</li><li>指標：過氧化價 POV、酸價 AV、TBA 值、碘價、皂化價。</li></ul>
+  <h4>褐變</h4><ul><li>酵素性：PPO 催化酚類氧化；抑制 = 熱燙、酸化、亞硫酸鹽、抗壞血酸、隔絕氧。</li><li>梅納：還原糖＋胺基酸，鹼性、高溫、中等 aw 最快；副產物丙烯醯胺（天門冬醯胺＋還原糖）。</li></ul>
+  <h4>酵素動力學</h4><div class="formula">v = Vmax·[S] / (Km + [S])</div>`},
+ {id:"v3",icon:"🦠",title:"微生物與殺菌公式卡",pts:700,body:`
+  <div class="formula">D 值：使活菌數減少 90%（1 log）所需時間
+z 值：使 D 值變化 10 倍所需的溫度變化
+F 值 = D × (log N0 − log N)
+換算：F(T) = F(Tref) × 10^((Tref − T)/z)</div>
+  <ul><li>低酸性食品：pH &gt; 4.6 且 aw &gt; 0.85；以肉毒桿菌為殺菌目標（12D 概念，121.1°C 下 Fo 約 2.5 分）。</li><li>酸性食品（pH ≤ 4.6）：以耐熱黴菌、乳酸菌等為目標，殺菌強度較低。</li></ul>
+  <h4>病原菌速記</h4>
+  <table><tr><th>菌</th><th>重點</th></tr>
+  <tr><td>肉毒桿菌</td><td>厭氧、神經毒素不耐熱（加熱可破壞），孢子耐熱；蜂蜜與嬰兒肉毒症</td></tr>
+  <tr><td>金黃色葡萄球菌</td><td>腸毒素耐熱，加熱殺菌後毒素仍在；人為汙染</td></tr>
+  <tr><td>仙人掌桿菌</td><td>催吐型（米飯、耐熱毒素）、腹瀉型</td></tr>
+  <tr><td>李斯特菌</td><td>可在冷藏溫度生長；孕婦、免疫低下者風險高</td></tr>
+  <tr><td>腸炎弧菌</td><td>嗜鹽、海產、生食；不耐淡水與加熱</td></tr>
+  <tr><td>沙門氏菌</td><td>蛋、家禽、生食；多數即食食品標準要求不得檢出</td></tr>
+  <tr><td>產氣莢膜梭菌</td><td>大鍋菜冷卻不當，孢子耐熱</td></tr></table>
+  <h4>檢驗</h4><ul><li>菌落計數：選取菌落數落在可計數範圍的稀釋度，範圍依方法而定（例如 25–250 或 30–300 CFU／盤）。</li><li>MPN：多管發酵法，查表求最可能數。</li><li>指標菌：大腸桿菌群、E. coli、腸球菌。</li></ul>`},
+ {id:"v4",icon:"📏",title:"食品分析與工廠管理公式卡",pts:1200,body:`
+  <h4>凱氏定氮</h4>
+  <div class="formula">步驟：消化（濃硫酸＋催化劑）→ 蒸餾（加鹼，氨以硼酸吸收）→ 滴定（標準酸）
+粗蛋白 (%) = (V − V空白) × N × 14.007 × F ÷ (樣品重 mg) × 100
+F：一般 6.25；小麥 5.70；乳 6.38</div>
+  <h4>其他一般成分</h4><ul><li>水分：常壓烘箱 105°C 恆重；微量水分用卡爾費雪。</li><li>灰分：高溫灰化（約 550°C）。</li><li>粗脂肪：索氏萃取。</li></ul>
+  <h4>檢量線與確效</h4>
+  <div class="formula">Beer–Lambert：A = ε·b·c
+LOD = 3.3 σ / S　　LOQ = 10 σ / S　（σ：空白或截距標準差，S：斜率）
+回收率 (%) = 實測 ÷ 添加 × 100　　RSD (%) = SD ÷ 平均 × 100</div>
+  <h4>儀器</h4><ul><li>HPLC：逆相 C18，極性移動相，適合不揮發、熱不穩定。</li><li>GC：揮發性或可衍生化成分。</li><li>MS：分子量與結構；LC‑MS／GC‑MS。</li><li>AAS／ICP：金屬元素。</li></ul>
+  <h4>統計製程管制</h4>
+  <div class="formula">管制圖：中心線 ± 3σ（X̄‑R 圖）
+Cp = (USL − LSL) ÷ 6σ
+Cpk = min[(USL − μ) ÷ 3σ , (μ − LSL) ÷ 3σ]</div>
+  <p class="mute">CIP 四要素（Sinner 圓）：時間、溫度、化學濃度、機械作用。</p>`},
+ {id:"v5",icon:"⚖️",title:"HACCP 與法規重點",pts:1800,body:`
+  <h4>HACCP 七大原則</h4>
+  <ol><li>危害分析</li><li>決定關鍵管制點 CCP</li><li>建立關鍵界限</li><li>建立監測系統</li><li>建立矯正措施</li><li>建立確認（驗證）程序</li><li>建立文件與紀錄</li></ol>
+  <p class="mute">Codex 12 步驟 = 5 個預備步驟（組小組、產品描述、預定用途、流程圖、現場確認）＋ 七大原則。</p>
+  <h4>體系關係</h4><ul><li>GHP 是基礎，HACCP 建在 GHP 之上。</li><li>ISO 22000 = HACCP＋前置方案＋管理系統（PDCA）＋溝通。</li><li>追溯追蹤：一步向前、一步向後。</li></ul>
+  <h4>答題提醒</h4><ul><li>法規題依「當年度現行條文」，讀完到衛福部食藥署核對最新修正。</li><li>罰則、限量、標示要寫數字與條件，不要只寫概念。</li></ul>`},
+ {id:"v6",icon:"⏱️",title:"全真模擬作戰手冊",pts:3000,body:`
+  <ul><li>進場前 5 分鐘：把六科的四段式架構和公式默寫在草稿紙最上面一段，能馬上用。</li><li>先瀏覽整份試卷，標出「有把握」、「半把握」、「純猜」，從有把握開始寫。</li><li>每題用「總時間 ÷ 題數」設鬧鐘，超時就留白換題，最後回頭補。</li><li>計算題先寫公式與代入，即使答案錯也能拿過程分。</li><li>寫法規與數字題時，寫「條文名稱＋數值＋適用條件」。</li><li>連考 3 科要練體力：同一時段進行、吃跟考試日一樣的早餐與午餐。</li></ul>
+  <p class="mute">實際考試時間與科目順序，以考選部簡章為準。</p>`},
+ {id:"v7",icon:"🌙",title:"考前一日檢查表",pts:4500,body:`
+  <ul><li>□ 准考證、身分證件、2B 鉛筆或指定書寫用具、備用筆</li><li>□ 手錶（依簡章規定）、計算機（確認型號合規）</li><li>□ 確認考場位置與交通時間，預留 30 分鐘緩衝</li><li>□ 只看六科架構圖與公式卡，不再碰新題</li><li>□ 晚餐清淡、早睡，鬧鐘設兩個</li></ul>
+  <p class="mute">計算機與用品規定以簡章公告為準，請自行核對。</p>`},
+];
+const CERT = {id:"cert",icon:"🏆",title:"結業證書",need:"完成全部 50 天"};
+
+/* ============ 狀態 ============ */
+const KEY = "foodtech50.v1";
+let store = {users:{},current:null};
+try{ const r=localStorage.getItem(KEY); if(r) store=JSON.parse(r); }catch(e){}
+function save(){ try{ localStorage.setItem(KEY,JSON.stringify(store)); }catch(e){} }
+const U = () => store.users[store.current];
+const todayStr = () => new Date().toLocaleDateString("sv");
+const esc = s => String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+function dayDone(u,day){ const dn=u.done[day.d]||[]; return day.tasks.every(t=>dn.includes(t.id)); }
+function dayPartial(u,day){ return (u.done[day.d]||[]).length>0; }
+function dayUnlocked(u,d){ return d===1 || dayDone(u,DAYS[d-2]); }
+function currentDay(u){ const x=DAYS.find(dy=>!dayDone(u,dy)); return x?x.d:50; }
+function allDone(u){ return DAYS.every(dy=>dayDone(u,dy)); }
+
+function streakInfo(dates){
+  const s=[...new Set(dates)].sort(); const out={}; let run=0, prev=null;
+  s.forEach(ds=>{
+    const dt=new Date(ds+"T00:00:00");
+    if(prev && Math.round((dt-prev)/864e5)===1) run++; else run=1;
+    out[ds]=run; prev=dt;
+  });
+  return out;
+}
+function currentStreak(u){
+  const m=streakInfo(u.logins), t=todayStr();
+  const y=new Date(Date.now()-864e5).toLocaleDateString("sv");
+  return m[t]||m[y]||0;
+}
+function calc(u){
+  let task=0,bonus=0,login=0,streak=0;
+  DAYS.forEach(day=>{
+    const dn=u.done[day.d]||[];
+    day.tasks.forEach(t=>{ if(dn.includes(t.id)) task+=t.pts; });
+    if(dayDone(u,day)) bonus+=day.bonus;
+  });
+  const m=streakInfo(u.logins);
+  Object.values(m).forEach(n=>{ login+=LOGIN_PTS; streak+=5*Math.min(n-1,6); });
+  return {task,bonus,login,streak,total:task+bonus+login+streak};
+}
+function levelOf(total){
+  let i=0; LEVELS.forEach((l,k)=>{ if(total>=l[0]) i=k; });
+  const next=LEVELS[i+1];
+  return {name:LEVELS[i][1],i,next, pct: next?(total-LEVELS[i][0])/(next[0]-LEVELS[i][0])*100:100};
+}
+
+/* ============ UI 工具 ============ */
+function toast(msg){
+  const el=document.createElement("div"); el.className="toast"; el.textContent=msg;
+  document.getElementById("toasts").appendChild(el);
+  setTimeout(()=>el.remove(),2600);
+}
+const ui = {tab:"today", sel:null, open:{}};
+
+/* ============ 登入 ============ */
+function renderLogin(){
+  const names=Object.keys(store.users);
+  document.getElementById("app").innerHTML=`
+   <div class="wrap"><div class="login">
+    <div style="font-size:48px">🍱</div>
+    <h1>食品技師 50 天闖關</h1>
+    <p class="mute">逐科建構 30 天 → 歷屆整卷 12 天 → 衝刺模擬 8 天。<br>每天登入、完成任務就有點數，點數越多，越重要的公式卡與作戰手冊就越早解鎖。</p>
+    ${names.length?`<p class="mute">選擇帳號</p><div class="profiles">${names.map(n=>`<button class="btn pri" data-pick="${esc(n)}">${esc(n)}</button>`).join("")}</div><p class="mute">或建立新帳號</p>`:""}
+    <form id="lf" style="display:flex;gap:8px;margin-top:8px">
+      <input type="text" id="nm" maxlength="20" placeholder="輸入你的暱稱" autocomplete="nickname" required>
+      <button class="btn pri" style="white-space:nowrap">開始</button>
+    </form>
+    <p class="mute" style="margin-top:16px">進度存在這個瀏覽器裡（沒有伺服器帳號）；換裝置前請到「我的」匯出備份。</p>
+   </div></div>`;
+  document.getElementById("lf").onsubmit=e=>{
+    e.preventDefault();
+    const n=document.getElementById("nm").value.trim().slice(0,20);
+    if(!n) return;
+    if(!store.users[n]) store.users[n]={created:todayStr(),done:{},logins:[],startDate:"",seen:[]};
+    login(n);
+  };
+  document.querySelectorAll("[data-pick]").forEach(b=>b.onclick=()=>login(b.dataset.pick));
+}
+function login(n){
+  store.current=n; const u=U();
+  const t=todayStr();
+  if(!u.seen) u.seen=[];
+  if(!u.logins.includes(t)){
+    u.logins.push(t);
+    const s=streakInfo(u.logins)[t];
+    const bonus=5*Math.min(s-1,6);
+    save(); render();
+    toast(`每日登入 +${LOGIN_PTS}`+(bonus?`，連續 ${s} 天 +${bonus}`:""));
+    return;
+  }
+  save(); render();
+}
+
+/* ============ 主畫面 ============ */
+function render(){
+  if(!store.current||!U()) return renderLogin();
+  const u=U(), c=calc(u), lv=levelOf(c.total);
+  if(ui.sel===null) ui.sel=currentDay(u);
+  const app=document.getElementById("app");
+  app.innerHTML=`
+   <header class="top">
+    <div class="top-in"><span class="brand">🍱 食品技師 50 天</span><span class="spacer"></span>
+      <span class="pts">⭐ ${c.total} <small>點</small></span></div>
+    <div class="lvl"><span>${esc(lv.name)}</span><div class="bar"><i style="width:${lv.pct}%"></i></div>
+      <span>${lv.next?`差 ${lv.next[0]-c.total} 點升「${lv.next[1]}」`:"已達最高等級"}</span></div>
+   </header>
+   <main class="wrap" id="main"></main>
+   <nav class="tabs">
+     ${[["today","📝","今日"],["map","🗺️","地圖"],["vault","🔓","寶庫"],["me","👤","我的"]].map(t=>`<button data-tab="${t[0]}" class="${ui.tab===t[0]?"on":""}"><b>${t[1]}</b>${t[2]}</button>`).join("")}
+   </nav>`;
+  app.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>{ui.tab=b.dataset.tab; render(); scrollTo(0,0);});
+  const main=document.getElementById("main");
+  ({today:viewToday,map:viewMap,vault:viewVault,me:viewMe})[ui.tab](main,u,c);
+}
+
+function viewToday(el,u,c){
+  const day=DAYS[ui.sel-1], unlocked=dayUnlocked(u,day.d), dn=u.done[day.d]||[];
+  const earned=day.tasks.filter(t=>dn.includes(t.id)).reduce((a,t)=>a+t.pts,0)+(dayDone(u,day)?day.bonus:0);
+  const max=day.tasks.reduce((a,t)=>a+t.pts,0)+day.bonus;
+  const streak=currentStreak(u);
+  let countdown="";
+  if(u.startDate){
+    const diff=Math.round((new Date(todayStr()+"T00:00:00")-new Date(u.startDate+"T00:00:00"))/864e5)+1;
+    countdown=`<span class="tag">依日期今天是 D${Math.max(1,Math.min(50,diff))}${diff>50?"（已超過）":diff<1?"（尚未開始）":""}</span> `;
+  }
+  el.innerHTML=`
+   <div class="card" style="margin-top:16px">
+     <div class="daynav">
+       <button class="btn sm" id="prev" ${day.d===1?"disabled":""}>‹ 前一天</button>
+       <div style="text-align:center"><b style="font-size:20px">Day ${day.d}</b><div class="mute">${esc(PHASE_NAME[day.phase])}</div></div>
+       <button class="btn sm" id="next" ${day.d===50?"disabled":""}>後一天 ›</button>
+     </div>
+   </div>
+   <div class="card">
+     ${countdown}<span class="tag">${esc(day.subj)}</span> ${day.quiz?'<span class="tag warn">小考日</span>':""}
+     <h2 style="margin:8px 0 4px">${esc(day.title)}</h2>
+     ${day.kw?`<div class="kw mute">搜尋關鍵字：${day.kw.split("、").map(k=>`<code>${esc(k)}</code>`).join("")} <a href="${SEARCH_URL}" target="_blank" rel="noopener">找考題 ↗</a></div>`:""}
+     ${day.phase===2?`<div class="kw mute"><a href="${LINKS.exam114}" target="_blank" rel="noopener">114 年</a> · <a href="${LINKS.exam115}" target="_blank" rel="noopener">115 年</a> · <a href="${LINKS.exam113}" target="_blank" rel="noopener">113 年</a></div>`:""}
+     ${day.d>=47&&day.d<=48?`<div class="kw mute"><a href="${LINKS.mock}" target="_blank" rel="noopener">模擬考 ↗</a></div>`:""}
+     ${day.d===49?`<div class="kw mute"><a href="${LINKS.wrong}" target="_blank" rel="noopener">錯題複習 ↗</a></div>`:""}
+   </div>
+   <div class="card">
+     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+       <b>今日任務</b><span class="mute">${earned} / ${max} 點</span></div>
+     ${!unlocked?`<p class="mute">🔒 先完成 Day ${day.d-1} 才能開始這一天。</p>`:""}
+     ${day.tasks.map(t=>`
+       <div class="task ${dn.includes(t.id)?"done":""} ${unlocked?"":"disabled"}">
+         <input type="checkbox" id="t${t.id}" data-t="${t.id}" ${dn.includes(t.id)?"checked":""} ${unlocked?"":"disabled"}>
+         <label for="t${t.id}">${esc(t.text)}</label><span class="p">+${t.pts}</span>
+       </div>`).join("")}
+     <div class="task" style="opacity:${dayDone(u,day)?1:.6}"><span style="width:24px;text-align:center">🎁</span><span style="flex:1">全部完成的當日獎勵</span><span class="p">+${day.bonus}</span></div>
+   </div>
+   <div class="card mute">🔥 連續登入 ${streak} 天 ・ 每日登入 +${LOGIN_PTS}，連續天數再加 5 點（最多 +30）</div>`;
+  document.getElementById("prev").onclick=()=>{ui.sel--;render();};
+  document.getElementById("next").onclick=()=>{ui.sel++;render();};
+  el.querySelectorAll("[data-t]").forEach(cb=>cb.onchange=()=>toggleTask(day,cb.dataset.t,cb.checked));
+}
+
+function toggleTask(day,tid,on){
+  const u=U(), before=calc(u), prevLv=levelOf(before.total).i;
+  const prevVault=VAULT.filter(v=>before.total>=v.pts).length, wasDone=dayDone(u,day);
+  const list=u.done[day.d]||(u.done[day.d]=[]);
+  const i=list.indexOf(tid);
+  if(on&&i<0) list.push(tid); else if(!on&&i>=0) list.splice(i,1);
+  save();
+  const after=calc(u), delta=after.total-before.total;
+  render();
+  if(delta>0) toast(`+${delta} 點`+(!wasDone&&dayDone(u,day)?`（含當日獎勵 ${day.bonus}）`:""));
+  else if(delta<0) toast(`${delta} 點（取消勾選）`);
+  const lv=levelOf(after.total);
+  if(lv.i>prevLv) setTimeout(()=>toast(`🎉 升級：${lv.name}`),700);
+  const nv=VAULT.filter(v=>after.total>=v.pts);
+  if(nv.length>prevVault) setTimeout(()=>toast(`🔓 解鎖：${nv[nv.length-1].title}`),1300);
+  if(!wasDone&&dayDone(u,day)&&day.d<50&&ui.sel===day.d){
+    setTimeout(()=>{ if(confirm(`Day ${day.d} 完成！要前往 Day ${day.d+1} 嗎？`)){ui.sel=day.d+1;render();scrollTo(0,0);} },1500);
+  }
+  if(allDone(u)&&!u.certShown){ u.certShown=true; save(); setTimeout(()=>{ui.tab="vault";render();toast("🏆 50 天全數完成！結業證書已解鎖");},1800); }
+}
+
+function viewMap(el,u){
+  const cur=currentDay(u);
+  el.innerHTML=`<h2>50 天地圖</h2>
+   ${[1,2,3].map(ph=>`
+     <div class="card"><b>${PHASE_NAME[ph]}</b> <span class="mute">D${DAYS.find(d=>d.phase===ph).d}–D${[...DAYS].reverse().find(d=>d.phase===ph).d}</span>
+      <div class="grid" style="margin-top:10px">
+      ${DAYS.filter(d=>d.phase===ph).map(d=>{
+        const cls=dayDone(u,d)?"done":dayPartial(u,d)?"part":"", lock=!dayUnlocked(u,d.d)?"lock":"";
+        return `<button class="cell ${cls} ${lock} ${d.quiz||d.d===50||d.d===47||d.d===48?"star":""} ${d.d===cur?"cur":""}" data-d="${d.d}"><small>D</small><b>${d.d}</b></button>`;
+      }).join("")}</div></div>`).join("")}
+   <div class="legend"><span><i class="sw" style="background:var(--brand)"></i>已完成</span><span><i class="sw" style="background:var(--soft)"></i>進行中</span><span><i class="sw" style="outline:2px solid var(--accent)"></i>目前關卡</span><span>★ 小考／模擬／最後一天</span></div>`;
+  el.querySelectorAll("[data-d]").forEach(b=>b.onclick=()=>{
+    const d=+b.dataset.d;
+    if(!dayUnlocked(u,d)) return toast(`🔒 先完成 Day ${d-1}`);
+    ui.sel=d; ui.tab="today"; render(); scrollTo(0,0);
+  });
+}
+
+function viewVault(el,u,c){
+  const items=VAULT.map(v=>({...v,ok:c.total>=v.pts}));
+  const certOk=allDone(u);
+  el.innerHTML=`<h2>寶庫</h2><p class="mute">累積點數達標就會解鎖（解鎖不扣點）。越重要、越難背的內容，門檻越高。</p>
+   <div class="vault">
+   ${items.map(v=>`
+    <div class="card item ${v.ok?"":"lock"}">
+      <div class="head" data-o="${v.id}"><span style="font-size:24px">${v.ok?v.icon:"🔒"}</span>
+        <h3>${esc(v.title)}</h3>
+        ${v.ok?`<span class="tag">${ui.open[v.id]?"收合":"展開"}</span>`:`<span class="need">${c.total} / ${v.pts}</span>`}</div>
+      ${v.ok?(ui.open[v.id]?`<div class="body">${v.body}</div>`:""):`<div class="bar" style="margin-top:8px"><i style="width:${Math.min(100,c.total/v.pts*100)}%"></i></div><div class="need" style="margin-top:4px">還差 ${v.pts-c.total} 點解鎖</div>`}
+    </div>`).join("")}
+    <div class="card item ${certOk?"":"lock"}">
+      <div class="head" data-o="cert"><span style="font-size:24px">${certOk?"🏆":"🔒"}</span><h3>${CERT.title}</h3>
+        ${certOk?`<span class="tag">${ui.open.cert?"收合":"展開"}</span>`:`<span class="need">${CERT.need}</span>`}</div>
+      ${certOk&&ui.open.cert?`<div class="body"><div class="cert"><div style="font-size:48px">🏆</div><h3>${esc(store.current)}</h3>
+        <p>完成「食品技師 50 天複習計畫」全部關卡<br>累積 ${c.total} 點 ・ ${esc(levelOf(c.total).name)}</p><p class="mute">祝你金榜題名</p></div></div>`:""}
+    </div></div>`;
+  el.querySelectorAll("[data-o]").forEach(h=>h.onclick=()=>{
+    const id=h.dataset.o, v=items.find(x=>x.id===id);
+    if(id==="cert"?!certOk:!v.ok) return toast("🔒 尚未解鎖");
+    ui.open[id]=!ui.open[id]; render();
+  });
+}
+
+function viewMe(el,u,c){
+  const doneDays=DAYS.filter(d=>dayDone(u,d)).length;
+  el.innerHTML=`<h2>${esc(store.current)} 的進度</h2>
+   <div class="stat card">
+     <div><b>${c.total}</b>總點數</div><div><b>${doneDays}/50</b>完成天數</div>
+     <div><b>${currentStreak(u)}</b>連續登入</div><div><b>${esc(levelOf(c.total).name)}</b>等級</div></div>
+   <div class="card"><b>點數來源</b>
+     <table style="width:100%;margin-top:8px;border-collapse:collapse">
+      ${[["任務",c.task],["當日完成獎勵",c.bonus],["每日登入",c.login],["連續登入加成",c.streak]].map(r=>`<tr><td style="padding:4px 0">${r[0]}</td><td style="text-align:right"><b>${r[1]}</b></td></tr>`).join("")}</table></div>
+   <div class="card"><b>考試日期設定（選填）</b>
+     <p class="mute">填入 Day 1 的日期，今日頁會提醒依日期今天該是 D 幾。考試日以考選部公告為準，往前推 50 天就是 Day 1。</p>
+     <input type="date" id="sd" value="${esc(u.startDate||"")}"></div>
+   <div class="card"><b>備份與帳號</b>
+     <p class="mute">資料只存在這個瀏覽器。換裝置或清除資料前請先匯出。</p>
+     <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn" id="exp">匯出進度</button><button class="btn" id="imp">匯入進度</button>
+      <button class="btn" id="out">登出／換帳號</button><button class="btn" id="rst" style="color:var(--danger)">重設此帳號</button></div>
+     <input type="file" id="file" accept="application/json" class="hidden"></div>
+   <div class="card mute">參考連結：<a href="${LINKS.all}" target="_blank" rel="noopener">考古題總覽</a> ・ <a href="${LINKS.wrong}" target="_blank" rel="noopener">錯題複習</a> ・ <a href="${LINKS.stats}" target="_blank" rel="noopener">學習紀錄</a> ・ <a href="https://examscloud.net/forum" target="_blank" rel="noopener">討論區</a></div>`;
+  document.getElementById("sd").onchange=e=>{u.startDate=e.target.value;save();toast("已設定 Day 1 日期");};
+  document.getElementById("out").onclick=()=>{store.current=null;save();render();};
+  document.getElementById("rst").onclick=()=>{
+    if(!confirm(`確定重設「${store.current}」的所有進度？此動作無法復原。`)) return;
+    store.users[store.current]={created:todayStr(),done:{},logins:[todayStr()],startDate:"",seen:[]};
+    ui.sel=null; save(); render();
+  };
+  document.getElementById("exp").onclick=()=>{
+    const blob=new Blob([JSON.stringify({name:store.current,user:u},null,1)],{type:"application/json"});
+    const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=`foodtech50-${store.current}.json`; a.click();
+    setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+  };
+  const file=document.getElementById("file");
+  document.getElementById("imp").onclick=()=>file.click();
+  file.onchange=async()=>{
+    try{
+      const j=JSON.parse(await file.files[0].text());
+      if(!j.name||!j.user||typeof j.user.done!=="object"||!Array.isArray(j.user.logins)) throw 0;
+      const name=String(j.name).slice(0,20);
+      if(store.users[name]&&!confirm(`已有帳號「${name}」，要覆蓋嗎？`)) return;
+      store.users[name]={created:String(j.user.created||todayStr()),done:j.user.done,logins:j.user.logins.map(String),startDate:String(j.user.startDate||""),seen:[]};
+      store.current=name; ui.sel=null; save(); render(); toast("匯入完成");
+    }catch(e){ toast("檔案格式不正確"); }
+  };
+}
+
+if(store.current&&store.users[store.current]) login(store.current); else render();
+</script>
+</body>
+</html>
